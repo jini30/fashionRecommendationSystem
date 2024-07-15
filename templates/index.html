@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Recommendation System</title>
+</head>
+<body>
+    <h1>Upload Image for Recommendations</h1>
+    <form id="uploadForm" action="/recommend" method="post" enctype="multipart/form-data">
+        <input type="file" name="file" id="fileInput" accept=".jpg, .jpeg, .png" required>
+        <button type="submit">Upload Image</button>
+    </form>
+
+    <div id="recommendations">
+        <!-- Recommendations will be displayed here -->
+    </div>
+
+    <script>
+        // Handle form submission and recommendation display
+        document.getElementById('uploadForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const formData = new FormData();
+            formData.append('file', document.getElementById('fileInput').files[0]);
+
+            try {
+                const response = await fetch('/recommend', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to upload image');
+                }
+
+                const data = await response.json();
+                displayRecommendations(data.recommended_images);
+
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        });
+
+        // Function to display recommendations on the page
+        function displayRecommendations(recommended_images) {
+            const recommendationsDiv = document.getElementById('recommendations');
+            recommendationsDiv.innerHTML = '<h2>Recommended Images:</h2>';
+            const ul = document.createElement('ul');
+            recommended_images.forEach((image) => {
+                const li = document.createElement('li');
+                var img = document.createElement('img');
+                console.log(`image = ${image}`);
+                img.src = 'https://images.ctfassets.net/hrltx12pl8hq/28ECAQiPJZ78hxatLTa7Ts/2f695d869736ae3b0de3e56ceaca3958/free-nature-images.jpg?fit=fill&w=1200&h=630'
+                img.alt = 'Recommended Image';
+                img.style.width = '200px'; // Adjust size as needed
+                li.appendChild(img);
+                ul.appendChild(li);
+            });
+            recommendationsDiv.appendChild(ul);
+        }
+    </script>
+</body>
+</html>
